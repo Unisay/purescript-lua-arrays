@@ -1,5 +1,5 @@
 return {
-  rangeImpl = function(start, end_)
+  rangeImpl = (function(start, end_)
     local step = start > end_ and -1 or 1
     local result = {}
     local i, n = start, 1
@@ -10,27 +10,19 @@ return {
     end
     result[n] = i
     return result
-  end,
-
-  replicateImpl = function(count, value)
-    if count < 1 then
-      return {}
-    end
+  end),
+  replicateImpl = (function(count, value)
+    if count < 1 then return {} end
     local result = {}
-    for i = 1, count do
-      result[i] = value
-    end
+    for i = 1, count do result[i] = value end
     return result
-  end,
-
-  fromFoldableImpl = (function()
-    local function Cons(head, tail) return { head = head, tail = tail } end
+  end),
+  fromFoldableImpl = ((function()
+    local function Cons(head, tail) return {head = head, tail = tail} end
 
     local emptyList = {}
 
-    local function curryCons(head)
-      return function(tail) return Cons(head, tail) end
-    end
+    local function curryCons(head) return function(tail) return Cons(head, tail) end end
 
     local function listToArray(list)
       local result = {}
@@ -44,75 +36,59 @@ return {
       return result
     end
 
-    return function(foldr, xs)
-      return listToArray(foldr(curryCons)(emptyList)(xs))
-    end
-  end)(),
-
-  length = function(xs) return #xs end,
-
-  unconsImpl = function(empty, next, xs)
+    return function(foldr, xs) return listToArray(foldr(curryCons)(emptyList)(xs)) end
+  end)()),
+  length = (function(xs) return #xs end),
+  unconsImpl = (function(empty, next, xs)
     if #xs == 0 then return empty({}) end
     return next(xs[1])(table.pack(table.unpack(xs, 2)))
-  end,
-
-  indexImpl = function(just, nothing, xs, i)
-    if i < 0 or i >= #xs
-    then return nothing
-    else return just(xs[i + 1])
+  end),
+  indexImpl = (function(just, nothing, xs, i)
+    if i < 0 or i >= #xs then
+      return nothing
+    else
+      return just(xs[i + 1])
     end
-  end,
-
-  findMapImpl = function(nothing, isJust, f, xs)
+  end),
+  findMapImpl = (function(nothing, isJust, f, xs)
     for i = 1, #xs do
       local result = f(xs[i])
       if isJust(result) then return result end
     end
     return nothing
-  end,
-
-  findIndexImpl = function(just, nothing, f, xs)
-    for i = 1, #xs do
-      if f(xs[i]) then return just(i - 1) end
-    end
+  end),
+  findIndexImpl = (function(just, nothing, f, xs)
+    for i = 1, #xs do if f(xs[i]) then return just(i - 1) end end
     return nothing
-  end,
-
-  findLastIndexImpl = function(just, nothing, f, xs)
-    for i = #xs, 1, -1 do
-      if f(xs[i]) then return just(i - 1) end
-    end
+  end),
+  findLastIndexImpl = (function(just, nothing, f, xs)
+    for i = #xs, 1, -1 do if f(xs[i]) then return just(i - 1) end end
     return nothing
-  end,
-
-  _insertAt = function(just, nothing, i, a, l)
+  end),
+  _insertAt = (function(just, nothing, i, a, l)
     if i < 0 or i > #l then return nothing end
     local l1 = table.pack(table.unpack(l))
     table.insert(l1, i + 1, a)
     return just(l1)
-  end,
-
-  _deleteAt = function(just, nothing, i, l)
+  end),
+  _deleteAt = (function(just, nothing, i, l)
     if i < 0 or i >= #l then return nothing end
     local l1 = table.pack(table.unpack(l))
     table.remove(l1, i + 1)
     return just(l1)
-  end,
-
-  _updateAt = function(just, nothing, i, f, l)
+  end),
+  _updateAt = (function(just, nothing, i, f, l)
     if i < 0 or i >= #l then return nothing end
     local l1 = table.pack(table.unpack(l))
     l1[i + 1] = f(l1[i + 1])
     return just(l1)
-  end,
-
-  reverse = function(xs)
+  end),
+  reverse = (function(xs)
     local result, l = {}, #xs
     for i = l, 1, -1 do result[l - i + 1] = xs[i] end
     return result
-  end,
-
-  concat = function(xss)
+  end),
+  concat = (function(xss)
     local result = {}
     local l = 1
     for i = 1, #xss do
@@ -123,9 +99,8 @@ return {
       end
     end
     return result
-  end,
-
-  filterImpl = function(f, xs)
+  end),
+  filterImpl = (function(f, xs)
     local result = {}
     local l = 1
     for i = 1, #xs do
@@ -136,9 +111,8 @@ return {
       end
     end
     return result
-  end,
-
-  partitionImpl = function(f, xs)
+  end),
+  partitionImpl = (function(f, xs)
     local yes, no = {}, {}
     local l1, l2 = 1, 1
     for i = 1, #xs do
@@ -151,10 +125,9 @@ return {
         l2 = l2 + 1
       end
     end
-    return { yes = yes, no = no }
-  end,
-
-  scanlImpl = function(f, b, xs)
+    return {yes = yes, no = no}
+  end),
+  scanlImpl = (function(f, b, xs)
     local result = {}
     local acc = b
     for i = 1, #xs do
@@ -162,9 +135,8 @@ return {
       result[i] = acc
     end
     return result
-  end,
-
-  scanrImpl = function(f, b, xs)
+  end),
+  scanrImpl = (function(f, b, xs)
     local result = {}
     local acc = b
     for i = #xs, 1, -1 do
@@ -172,23 +144,16 @@ return {
       result[i] = acc
     end
     return result
-  end,
-
-  sortByImpl = (function()
-    local function rshift(x, by)
-      return math.floor(x / 2 ^ by)
-    end
+  end),
+  sortByImpl = ((function()
+    local function rshift(x, by) return math.floor(x / 2 ^ by) end
 
     local function mergeFromTo(compare, fromOrdering, xs1, xs2, from, to)
       local mid, i, j, k, x, y, c
 
       mid = from + rshift(to - from, 1)
-      if mid - from > 1 then
-        mergeFromTo(compare, fromOrdering, xs2, xs1, from, mid)
-      end
-      if to - mid > 1 then
-        mergeFromTo(compare, fromOrdering, xs2, xs1, mid, to)
-      end
+      if mid - from > 1 then mergeFromTo(compare, fromOrdering, xs2, xs1, from, mid) end
+      if to - mid > 1 then mergeFromTo(compare, fromOrdering, xs2, xs1, mid, to) end
 
       i = from
       j = mid
@@ -225,39 +190,25 @@ return {
       mergeFromTo(compare, fromOrdering, out, slice, 0, #xs)
       return out
     end
-
-  end)(),
-
-  sliceImpl = function(s, e, t)
+  end)()),
+  sliceImpl = (function(s, e, t)
     local spliced = {}
-    for i, el in ipairs(t) do
-      if i > s and i <= e then table.insert(spliced, el) end
-    end
+    for i, el in ipairs(t) do if i > s and i <= e then table.insert(spliced, el) end end
     return spliced
-  end,
-
-  zipWithImpl = function(f, xs, ys)
+  end),
+  zipWithImpl = (function(f, xs, ys)
     local l = #xs < #ys and #xs or #ys
     local result = {}
-    for i = 1, l do
-      result[i] = f(xs[i])(ys[i])
-    end
+    for i = 1, l do result[i] = f(xs[i])(ys[i]) end
     return result
-  end,
-
-  anyImpl = function(p, xs)
-    for i = 1, #xs do
-      if p(xs[i]) then return true end
-    end
+  end),
+  anyImpl = (function(p, xs)
+    for i = 1, #xs do if p(xs[i]) then return true end end
     return false
-  end,
-
-  allImpl = function(p, xs)
-    for i = 1, #xs do
-      if not p(xs[i]) then return false end
-    end
+  end),
+  allImpl = (function(p, xs)
+    for i = 1, #xs do if not p(xs[i]) then return false end end
     return true
-  end,
-
-  unsafeIndexImpl = function(xs, n) return xs[n + 1] end,
+  end),
+  unsafeIndexImpl = (function(xs, n) return xs[n + 1] end)
 }

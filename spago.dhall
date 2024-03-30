@@ -1,11 +1,17 @@
 { name = "purescript-lua-arrays"
 , dependencies =
-  [ "foldable-traversable"
+  [ "bifunctors"
+  , "control"
+  , "foldable-traversable"
   , "functions"
+  , "maybe"
   , "nonempty"
   , "partial"
   , "prelude"
+  , "safe-coerce"
   , "st"
+  , "tailrec"
+  , "tuples"
   , "unfoldable"
   , "unsafe-coerce"
   ]

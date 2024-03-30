@@ -2,4 +2,12 @@
 
 echo "Building..."
 
-spago build --quiet
+spago build 
+
+pslua --foreign-path . --ps-output output --entry Data.Array --lua-output-file dist/Data.Array.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.ST --lua-output-file dist/Data.Array.ST.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.ST.Partial --lua-output-file dist/Data.Array.ST.Partial.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.ST.Iterator --lua-output-file dist/Data.Array.ST.Iterator.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.Partial --lua-output-file dist/Data.Array.Partial.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.NonEmpty --lua-output-file dist/Data.Array.NonEmpty.lua
+pslua --foreign-path . --ps-output output --entry Data.Array.NonEmpty.Internal --lua-output-file dist/Data.Array.NonEmpty.Internal.lua
